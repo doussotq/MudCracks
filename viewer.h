@@ -27,6 +27,7 @@ signals:
     
 public slots:
     void repaint();
+    void generateMud();
     void retractMud();
     void hardenMud();
     void saveMud();

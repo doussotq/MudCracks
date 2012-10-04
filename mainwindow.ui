@@ -28,6 +28,13 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <widget class="QPushButton" name="GenMudBut">
+        <property name="text">
+         <string>Generate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="RetractButt">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
@@ -135,6 +142,7 @@
     <slot>saveMud()</slot>
     <slot>setCurrent()</slot>
     <slot>loadMud()</slot>
+    <slot>generateMud()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -213,6 +221,22 @@
     <hint type="sourcelabel">
      <x>864</x>
      <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>408</x>
+     <y>446</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>GenMudBut</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>generateMud()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>864</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>408</x>

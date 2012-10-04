@@ -2,21 +2,22 @@
 #define MUDSPRING_H
 
 #include <iostream>
+#include <vector>
 
 class MudParticle;
 
 class MudSpring
 {
-    static int currId;
-    int id;
 
     float SaveRL;
 
 
 public:
-    MudParticle *mp1,*mp2;
+    std::vector<MudParticle*> * particles;
+    unsigned int mp1,mp2;
 
-    MudSpring(MudParticle *mp1_, MudParticle *mp2_);
+    MudSpring(std::vector<MudParticle*> * particles);
+    MudSpring(std::vector<MudParticle*> * particles, unsigned int mp1_, unsigned int mp2_);
     void setRstLgthFrmParts();
     void saveAndSRLFP();
 
@@ -26,11 +27,10 @@ public:
     float RestingLength;
     float k;
 
-    int getId() const;
-
     void applyForce();
     void draw();
     friend std::ostream & operator <<(std::ostream & os, const MudSpring & ms);
+    friend std::istream & operator >>(std::istream & is, MudSpring & ms);
 
 };
 

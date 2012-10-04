@@ -17,8 +17,7 @@ void Viewer::initializeGL(){
     glClearColor( 1.0, 1.0, 1.0, 0.0 );
     glEnable(GL_DEPTH_TEST);
 
-    m.dart(0.05f,50);
-    m.convertToSpringMass();
+
 
 }
 
@@ -33,12 +32,12 @@ void Viewer::paintGL() {
 }
 
 void Viewer::repaint() {
-    m.actualize(0.001);
+    m.actualize(0.005);
     if (isRetracting) {
         counter++;
         qDebug()<<"is Retracting ! ";
         if (counter %10 == 0)
-            m.retract(0.99f);
+            m.retract(0.95f);
 
         if (counter == 800 + counter2) {
             counter = 0;
@@ -49,10 +48,14 @@ void Viewer::repaint() {
     updateGL();
 }
 
+void Viewer::generateMud() {
+    m.dart(0.005f,100);
+    m.convertToSpringMass();
+}
 
 void Viewer::retractMud() {
-    isRetracting= !isRetracting;
-    //m.retract(0.95f);
+    //isRetracting= !isRetracting;
+    m.retract(0.95f);
 }
 
 void Viewer::hardenMud() {
@@ -64,6 +67,7 @@ void Viewer::saveMud() {
 }
 
 void Viewer::loadMud() {
+    m.reset();
     m.load();
 }
 

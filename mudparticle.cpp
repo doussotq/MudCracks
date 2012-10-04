@@ -1,36 +1,11 @@
 #include "mudparticle.h"
 #include <mudspring.h>
 
-int MudParticle::currId=0;
-
-void MudParticle::toggleCounter(bool on) {
-    counterOn=on;
-}
-
-MudParticle::MudParticle()
+MudParticle::MudParticle(std::vector<MudSpring*> * springs_)
 {
-
-    if (counterOn) {
-        currId++;
-        id = currId;
-    }
-    else id = -1;
-
+    springs = springs_;
 }
 
-MudParticle::MudParticle(const MudParticle &mp) {
-    (*this)=mp;
-    if (counterOn) {
-        currId++;
-        id = currId;
-    }
-    else id = -1;
-}
-
-
-int MudParticle::getId() const {
-    return id;
-}
 
 void MudParticle::applyForce(QVector2D force) {
     f += force;
@@ -43,21 +18,20 @@ bool MudParticle::operator==(const MudParticle & mp) const {
 }
 
 
-void MudParticle::addSpring(MudSpring *s) {
-    springs.push_back(s);
+void MudParticle::addSpring(unsigned int n) {
+    springsNums.push_back(n);
 }
 
 
 void MudParticle::actualize(float time) {
     f += (origPos - pos)/2;
     if (type == 0)
-        pos += time * f.normalized();
+        pos += time * f;
     f -= f;
 }
 
 
 std::ostream & operator <<(std::ostream & os, const MudParticle & mp) {
-    os<<mp.getId()<<std::endl;
     os<<mp.type<<std::endl;
     os<<mp.origPos.x()<<std::endl;
     os<<mp.origPos.y()<<std::endl;
@@ -65,32 +39,41 @@ std::ostream & operator <<(std::ostream & os, const MudParticle & mp) {
     os<<mp.pos.y()<<std::endl;
     os<<mp.f.x()<<std::endl;
     os<<mp.f.y()<<std::endl;
-    os<<mp.springs.size()<<std::endl;
+    os<<mp.springsNums.size()<<std::endl;
 
-//    std::vector<MudSpring*>::iterator msIt;
-    for (std::vector<MudSpring*>::const_iterator msIt = mp.springs.begin(); msIt != mp.springs.end(); msIt++) {
-        os<< ((*msIt)->getId());
+    for (std::vector<unsigned int>::const_iterator msIt = mp.springsNums.begin(); msIt != mp.springsNums.end(); msIt++) {
+        os<<(*msIt)<<std::endl;
     }
-
 return os;
 }
 
-std::istream & operator <<(std::istream & os, MudParticle & mp) {
-    os>>mp.id;
+std::istream & operator >>(std::istream & os, MudParticle & mp) {
 
-    /*os<<mp.type<<std::endl;
-    os<<mp.origPos.x()<<std::endl;
-    os<<mp.origPos.y()<<std::endl;
-    os<<mp.pos.x()<<std::endl;
-    os<<mp.pos.y()<<std::endl;
-    os<<mp.f.x()<<std::endl;
-    os<<mp.f.y()<<std::endl;
-    os<<mp.springs.size()<<std::endl;
+    os>>mp.type;
+    float tmpIn;
+    os>>tmpIn;
+    mp.origPos.setX(tmpIn);
+    os>>tmpIn;
+    mp.origPos.setY(tmpIn);
 
-//    std::vector<MudSpring*>::iterator msIt;
-    for (std::vector<MudSpring*>::const_iterator msIt = mp.springs.begin(); msIt != mp.springs.end(); msIt++) {
-        os<< ((*msIt)->getId());
+    os>>tmpIn;
+    mp.pos.setX(tmpIn);
+    os>>tmpIn;
+    mp.pos.setY(tmpIn);
+
+    os>>tmpIn;
+    mp.f.setX(tmpIn);
+    os>>tmpIn;
+    mp.f.setY(tmpIn);
+
+    int sn;
+    os>>sn;
+
+    std::vector<MudSpring*>::iterator msIt;
+    int tmpIn2;
+    for (int i=0;i<sn;i++) {
+        os>>tmpIn2;
+        mp.addSpring(tmpIn2);
     }
-*/
 return os;
 }

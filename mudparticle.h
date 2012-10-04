@@ -11,18 +11,10 @@ class MudSpring;
 class MudParticle
 {
 
-    static int currId;
-    static bool counterOn;
-    static void toggleCounter(bool on);
-    int id;
 
 public: 
 
-    MudParticle();
-    MudParticle(const MudParticle & mp);
-
-
-    int getId() const;
+    MudParticle(std::vector<MudSpring*> * springs_);
 
     int type;
     QVector2D origPos;
@@ -31,8 +23,10 @@ public:
     void applyForce(QVector2D force);
 
 
-    std::vector<MudSpring*> springs;
-    void addSpring(MudSpring *s);
+    std::vector<MudSpring*> * springs;
+    std::vector<unsigned int> springsNums;
+
+    void addSpring(unsigned int n);
 
     bool operator==(const MudParticle & mp) const;
     bool operator!=(const MudParticle & mp) const { return ! (*(this) == mp); }

@@ -78,8 +78,9 @@ void mud::convertToSpringMass() {
 
 
     Edge_iterator eit;
-    MudParticle tmp_mp1, tmp_mp2;
-    MudParticle *tmp_pmp1, *tmp_pmp2;
+    MudParticle tmp_mp1(&mudSp), tmp_mp2(&mudSp);
+
+    unsigned int tmp_pmp1, tmp_pmp2;
 
     int nEdge=0;
 
@@ -111,11 +112,13 @@ void mud::convertToSpringMass() {
         else
             tmp_mp2.type = 1;
 
-
+        //Il faudrait mieux améliorer cette merde.
         tmp_pmp1 = utils::findOrAdd(mudPa,&tmp_mp1);
         tmp_pmp2 = utils::findOrAdd(mudPa,&tmp_mp2);
 
-        mudSp.push_back(new MudSpring (tmp_pmp1, tmp_pmp2));
+        mudSp.push_back(new MudSpring (&mudPa, tmp_pmp1, tmp_pmp2));
+        mudPa[tmp_pmp1]->addSpring(mudSp.size() -1);
+        mudPa[tmp_pmp2]->addSpring(mudSp.size() -1);
         nEdge++;
 
     }
@@ -161,7 +164,7 @@ void mud::harden(float rate ) {
 void mud::setCurrent() {
     std::vector<MudSpring*>::iterator spIt;
     for (spIt = mudSp.begin(); spIt != mudSp.end(); spIt++) {
-        (*spIt)->saveAndSRLFP();
+        (*spIt)->setRstLgthFrmParts();
     }
 }
 
@@ -216,27 +219,65 @@ void mud::save() {
     std::vector<MudParticle*>::iterator paIt;
     for (paIt = mudPa.begin(); paIt != mudPa.end(); paIt++) {
         file<<*(*paIt);
+        file<<std::endl;
     }
 
     std::vector<MudSpring*>::iterator msIt;
     for (msIt = mudSp.begin(); msIt != mudSp.end(); msIt++) {
         file<<*(*msIt);
+        file<<std::endl;
     }
     file.close();
 }
 
 void mud::load() {
+    qDebug()<<"load !";
     std::fstream file;
     file.open("mud.mud",std::fstream::in);
     int nbrParts, nbrSprings;
     file>>nbrParts;
     file>>nbrSprings;
+
+    mudPa.resize(nbrParts);
+    mudSp.resize(nbrSprings);
+
     qDebug()<<"nbr Parts : "<<nbrParts;
     qDebug()<<"nbr Springs : "<<nbrSprings;
 
-    for (int numP=0;numP<nbrParts;numP++) {
-
+    qDebug()<<"part it debut !";
+    std::vector<MudParticle*>::iterator paIt;
+    for (paIt = mudPa.begin(); paIt != mudPa.end(); paIt++) {
+        *paIt = new MudParticle(&mudSp);
+        file>>*(*paIt);
     }
+    qDebug()<<"part it fin !";
+
+
+    qDebug()<<"spring it debut !";
+    std::vector<MudSpring*>::iterator spIt;
+    for (spIt = mudSp.begin(); spIt != mudSp.end(); spIt++) {
+        *spIt = new MudSpring(&mudPa);
+        file>>*(*spIt);
+    }
+    qDebug()<<"spring it fin !";
 
     file.close();
+    qDebug()<<"fin load !";
+}
+
+void mud::reset() {
+    qDebug()<<"reset !";
+    std::vector<MudParticle*>::iterator paIt;
+    for (paIt = mudPa.begin(); paIt != mudPa.end(); paIt++) {
+        delete (*paIt);
+    }
+    mudPa.clear();
+
+    std::vector<MudSpring*>::iterator spIt;
+    for (spIt = mudSp.begin(); spIt != mudSp.end(); spIt++) {
+        delete (*spIt);
+    }
+    mudSp.clear();
+    qDebug()<<"fin reset !";
+
 }

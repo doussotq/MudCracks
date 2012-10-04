@@ -48,6 +48,7 @@ public:
 
     void save();
     void load();
+    void reset();
 
 };
 
